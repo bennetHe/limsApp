@@ -1,0 +1,35 @@
+{
+  "name": "LimsApp",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "start": "node node_modules/react-native/local-cli/cli.js start",
+    "test": "jest",
+    "bundle-ios": "node node_modules/react-native/local-cli/cli.js bundle --entry-file index.js  --platform ios --dev false --bundle-output ./ios/bundle/index.ios.jsbundle --assets-dest ./ios/bundle"
+  },
+  "dependencies": {
+    "moment": "^2.22.2",
+    "react": "16.3.1",
+    "react-native": "0.55.4",
+    "react-native-camera": "^1.1.4",
+    "react-native-flexi-radio-button": "^0.2.2",
+    "react-native-syan-image-picker": "^0.1.6",
+    "react-native-vector-icons": "^4.6.0",
+    "react-native-whc-calendar": "^1.0.6",
+    "react-navigation": "^2.6.2",
+    "react-redux": "^5.0.7",
+    "redux": "^4.0.0",
+    "redux-thunk": "^2.3.0",
+    "teaset": "^0.5.8"
+  },
+  "devDependencies": {
+    "babel-jest": "23.2.0",
+    "babel-preset-react-native": "4.0.0",
+    "jest": "23.3.0",
+    "react-test-renderer": "16.3.1"
+  },
+  "jest": {
+    "preset": "react-native"
+  },
+  "optionalDependencies": {}
+}
