@@ -34,6 +34,7 @@ class Lims extends Component {
         menuNav: [],
         loaded: false,
       }
+      this.navData = []
       BackHandler.addEventListener('hardwareBackPress', this.onBackButtonPressAndroid);
   }
 
@@ -71,11 +72,14 @@ class Lims extends Component {
       method: "GET",
     }
     httpFetch(options,(res)=>{
+
+      const list = res.data.filter(item =>item.resourceId == "b54e601bedc24e889c27c6b38fb06bbd")[0]; //limsApp菜单
+     // const list = this.setMenu(res.data);
       this.setState({
-        menuNav: res.data,
+        menuNav: list.childResource,
         loaded: false,
       })
-
+     // console.log(this.setMenu(res.data))
     },(error)=>{
       this.setState({
         loaded: false,
@@ -84,14 +88,29 @@ class Lims extends Component {
   }
 
 
+  // setMenu=(data)=>{
+  //   //let navList = [];
+  //   data.map(item=>{
+  //     this.navData.push({
+  //       resourceId: item.resourceId,
+  //       resourceName: item.resourceName
+  //     });
+  //     //console.log(item.resourceName,"-",item.resourceId);
+  //     if(item.childResource){
+  //       this.setMenu(item.childResource)
+  //     }
+  //   })
+  //   return this.navData
+  // }
 
-
-
+ 
   render() {
 
     const { params,navigate } = this.props.navigation;
     let userInfo = this.props.userInfo;
     const {menuNav,loaded} = this.state;
+    
+
     if(loaded){
       return(
         <Loading loading={loaded} text='加载中' />
@@ -106,216 +125,35 @@ class Lims extends Component {
 
               <View style={styles.networkBox}>
                   {
-                    menuNav.map((menu,index)=>{
-                      if(menu.resourceName === "整机订单管理"){
-
-                        return(
-                          <View style={{flex: 1, borderBottomColor: '#c8c7cc', borderBottomWidth: 1}} key={index}>
-                            <View style={ styles.navTitleView}>
-                                <Text style={styles.navTitle}>{menu.resourceName}</Text>
-                            </View>
-                            <View style={styles.columnStyle}>
-                            {
-                              menu.childResource.map((nav,key)=>{
-                                if(nav.resourceName === "订单接收"){
-                                  return(
-
-                                      <TouchableOpacity key={key+index+1} style={styles.iconView}
-                                        onPress={()=>{navigate('OrderReceiveList')}}
-                                        >
-                                          <Ionicons style={{fontSize: FONT_SIZE(28), color: "#f5cc19"}}  name="md-reorder" />
-                                          <Text style={styles.iconNavTitle}>{nav.resourceName}</Text>
-                                      </TouchableOpacity>
-
-                                  )
-                                }else if(nav.resourceName === "任务分配"){
-                                  return(
-
-                                      <TouchableOpacity key={key+index+1} style={styles.iconView}
-                                        onPress={()=>{this.props.navigation.navigate('OrderAllocationList')}}
-                                        >
-                                          <Icon style={styles.icon}  name="file-text-o" />
-                                          <Text style={styles.iconNavTitle}>{nav.resourceName}</Text>
-                                      </TouchableOpacity>
-
-                                  )
-                                }
-
-                              })
-
-                            }
-                              <TouchableOpacity  style={styles.iconView}
-                                onPress={()=>{this.props.navigation.navigate('Scan')}}
-                                >
-                                  <Ionicons style={{fontSize: FONT_SIZE(28), color: "#1B82D1"}}  name="md-qr-scanner" />
-                                  <Text style={styles.iconNavTitle}>扫一扫</Text>
-                              </TouchableOpacity>
-                              <TouchableOpacity  style={styles.iconView}
-                                onPress={()=>{this.props.navigation.navigate('OrderInspectList')}}
-                                >
-                                  <Ionicons style={{fontSize: FONT_SIZE(28), color: "#ee5e7b"}}  name="ios-cog" />
-                                  <Text style={styles.iconNavTitle}>检测-进行中</Text>
-                              </TouchableOpacity>
-                              <TouchableOpacity  style={styles.iconView}
-                                onPress={()=>{this.props.navigation.navigate('SearchList')}}
-                                >
-                                  <Ionicons style={{fontSize: FONT_SIZE(28), color: "#e63"}}  name="ios-search" />
-                                  <Text style={styles.iconNavTitle}>搜索条码</Text>
-                              </TouchableOpacity>
-                            </View>
+                    menuNav.map((nav,index)=>{
+                      return(
+                        <View key={index} style={{flex: 1, borderBottomColor: '#c8c7cc', borderBottomWidth: 1}} >
+                          <View style={ styles.navTitleView}>
+                            <Text style={styles.navTitle}>{nav.resourceName}</Text>
                           </View>
-                        )
-                      }else if (menu.resourceId === "c41c799b0bc741f680b12fc64cb7d3cd") {
-                          return(
-                            <View style={{flex: 1, borderBottomColor: '#c8c7cc', borderBottomWidth: 1}} key={index}>
-                              <View style={ styles.navTitleView}>
-                                  <Text style={styles.navTitle}>{menu.resourceName}</Text>
-                              </View>
-                              <View style={styles.columnStyle}>
-                              {
-                                menu.childResource.map((nav,key)=>{
-                                  if(nav.resourceName === "待审核"){
-                                    return(
-
-                                        <TouchableOpacity key={key+index+1} style={styles.iconView}
-                                          onPress={()=>{this.props.navigation.navigate('OrderReportAuditingList')}}
-                                          >
-                                            <Ionicons style={[styles.icon,{color: "#3B8CFF"}]}  name="md-cube" />
-                                            <Text style={styles.iconNavTitle}>{nav.resourceName}</Text>
-                                        </TouchableOpacity>
-
-                                    )
-                                  }else if(nav.resourceName === "待批准"){
-                                    return(
-                                        <TouchableOpacity key={key+index+1} style={styles.iconView}
-                                          onPress={()=>{this.props.navigation.navigate('OrderReportApprovalList')}}
-                                          >
-                                            <Ionicons style={[styles.icon,{color: "#E89806"}]}  name="md-egg" />
-                                            <Text style={styles.iconNavTitle}>{nav.resourceName}</Text>
-                                        </TouchableOpacity>
-                                    )
-                                  }
+                          <View style={styles.columnStyle}>
+                            {
+                              nav.childResource 
+                              ? (
+                                nav.childResource.map((item,i)=>{
+                                  return(
+                                    <TouchableOpacity key={i} style={styles.iconView}
+                                      onPress={()=>{navigate(item.href)}}
+                                      >
+                                        <Ionicons style={{fontSize: FONT_SIZE(28), color: "#"+item.remark}}  name={item.iconClass} />
+                                  <Text style={styles.iconNavTitle}>{item.resourceName}</Text>
+                                    </TouchableOpacity>
+                                  )
                                 })
-                              }
-                              </View>
-                            </View>
-                          )
-                      }else if(menu.resourceName === "样品管理"){
-
-                        return(
-                          <View style={{flex: 1, borderBottomColor: '#c8c7cc', borderBottomWidth: 1}} key={index}>
-                            <View style={ styles.navTitleView}>
-                                <Text style={styles.navTitle}>{menu.resourceName}</Text>
-                            </View>
-                            <View style={styles.columnStyle}>
-                            {
-                              menu.childResource.map((nav,key)=>{
-                                if(nav.resourceName === "样品收样"){
-                                  return(
-
-                                      <TouchableOpacity key={key+index+1} style={styles.iconView}
-                                        onPress={()=>{this.props.navigation.navigate('SampleReceiveList')}}
-                                        >
-                                          <Ionicons style={[styles.icon,{color: "#0EDAFF"}]}  name="md-log-in" />
-                                          <Text style={styles.iconNavTitle}>{nav.resourceName}</Text>
-                                      </TouchableOpacity>
-
-                                  )
-                                }else if(nav.resourceName === "样品领用"){
-                                  return(
-
-                                      <TouchableOpacity key={key+index+1} style={styles.iconView}
-                                        onPress={()=>{this.props.navigation.navigate('SampleUsesList')}}
-                                        >
-                                          <Ionicons style={[styles.icon,{color: "#E89806"}]}  name="md-paper" />
-                                          <Text style={styles.iconNavTitle}>{nav.resourceName}</Text>
-                                      </TouchableOpacity>
-
-                                  )
-                                }else if(nav.resourceName === "样品转交"){
-                                  return(
-
-                                      <TouchableOpacity key={key+index+1} style={styles.iconView}
-                                        onPress={()=>{this.props.navigation.navigate('SampleTransferList')}}
-                                        >
-                                          <Ionicons style={[styles.icon,{color: "#1322FF"}]}  name="md-repeat" />
-                                          <Text style={styles.iconNavTitle}>{nav.resourceName}</Text>
-                                      </TouchableOpacity>
-
-                                  )
-                                }else if(nav.resourceName === "样品归还"){
-                                  return(
-
-                                      <TouchableOpacity key={key+index+1} style={styles.iconView}
-                                        onPress={()=>{this.props.navigation.navigate('SampleBackList')}}
-                                        >
-                                          <Ionicons style={[styles.icon,{color: "#E8DE32"}]}  name="md-refresh" />
-                                          <Text style={styles.iconNavTitle}>{nav.resourceName}</Text>
-                                      </TouchableOpacity>
-
-                                  )
-                                }else if(nav.resourceName === "样品退回"){
-                                  return(
-
-                                      <TouchableOpacity key={key+index+1} style={styles.iconView}
-                                        onPress={()=>{this.props.navigation.navigate('SampleReturnList')}}
-                                        >
-                                          <Ionicons style={[styles.icon,{color: "#C315FF"}]}  name="md-log-out" />
-                                          <Text style={styles.iconNavTitle}>{nav.resourceName}</Text>
-                                      </TouchableOpacity>
-
-                                  )
-                                }
-
-                              })
+                                )
+                              : null
                             }
-                            </View>
                           </View>
-                        )
-                      }else if(menu.resourceName === "模块订单管理"){
-                        return(
-                          <View style={{flex: 1, borderBottomColor: '#c8c7cc', borderBottomWidth: 1}} key={index}>
-                            <View style={ styles.navTitleView}>
-                                <Text style={styles.navTitle}>{menu.resourceName}</Text>
-                            </View>
-                            <View style={styles.columnStyle}>
-                            {
-                              menu.childResource.map((nav,key)=>{
-                                if(nav.resourceName === "订单接收"){
-                                  return(
-
-                                      <TouchableOpacity key={key+index+1} style={styles.iconView}
-                                        onPress={()=>{this.props.navigation.navigate('OrderModuleReceiveList')}}
-                                        >
-                                          <Ionicons style={{fontSize: FONT_SIZE(28), color: "#f5cc19"}}  name="md-reorder" />
-                                          <Text style={styles.iconNavTitle}>{nav.resourceName}</Text>
-                                      </TouchableOpacity>
-
-                                  )
-                                }
-                                if(nav.resourceName === "任务抢单"){
-                                  return(
-
-                                      <TouchableOpacity key={key+index+1} style={styles.iconView}
-                                        onPress={()=>{this.props.navigation.navigate('OrderModuleTaskGrabList')}}
-                                        >
-                                          <Icon style={styles.icon}  name="file-text-o" />
-                                          <Text style={styles.iconNavTitle}>{nav.resourceName}</Text>
-                                      </TouchableOpacity>
-
-                                  )
-                                }
-
-                              })
-                            }
-                            </View>
-                          </View>
-                        )
-                      }
-
+                        </View>
+                      )
                     })
                   }
-
+                  
               </View>
             </View>
 
