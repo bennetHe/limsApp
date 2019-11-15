@@ -73,10 +73,15 @@ class Lims extends Component {
     }
     httpFetch(options,(res)=>{
 
-      const list = res.data.filter(item =>item.resourceId == "b54e601bedc24e889c27c6b38fb06bbd")[0]; //limsApp菜单
-     // const list = this.setMenu(res.data);
+      const syslist = res.data.filter(item =>item.resourceId == "dcdabda6d746802745e11dab34b9c0f9")[0]; //系统管理菜单
+      let appMenu = [];
+      if(syslist.childResource){
+        appMenu = syslist.childResource.filter(item =>item.resourceId == "b54e601bedc24e889c27c6b38fb06bbd")[0]; //limsApp菜单
+      }
+      
+      //b54e601bedc24e889c27c6b38fb06bbd
       this.setState({
-        menuNav: list.childResource,
+        menuNav: appMenu.childResource,
         loaded: false,
       })
      // console.log(this.setMenu(res.data))
